@@ -33,7 +33,7 @@ def get_ipv6():
     res = requests.get("https://ipapi.co/ipv6/")
     text = res.text.strip()
 
-    # Check if the result looks like an IPv6 address
+   
     if re.match(r"^([0-9a-fA-F:]+)$", text):
         return text
     else:
@@ -43,7 +43,7 @@ def get_ipv6():
 def index():
     ipv4 = get_ipv4()
     ipv6 = get_ipv6()
-    info = json.dumps(get_ip_info(), indent=4)  # Pretty print JSON
+    info = json.dumps(get_ip_info(), indent=4)  
     return render_template_string(TEMPLATE, ipv4=ipv4, ipv6=ipv6, info=info)
 
 if __name__ == "__main__":
