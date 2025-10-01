@@ -3,98 +3,172 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Just My Type (IP)</title>
+<title>Just My Type(IP)</title>
 <meta name="description" content="Look up an IP address (or your own). See type, city, region, country, ISP and map." />
 <link rel="icon" href="data:,">
 
-<!-- Leaflet for the tiny map -->
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin />
 <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
 
 <style>
   :root{
-    --bg:#f5f7fb;
-    --ink:#0f1a2a;
-    --muted:#61708a;
-    --brand:#4d7cff;
-    --ok:#36cf82;
-    --card:#ffffff;
-    --ring: 0 1px 0 rgba(16,24,40,.04), 0 10px 30px rgba(2,6,23,.08);
+    /* pinalitan ko brown aesthetic nlng suri */
+    --bg:#f7f2ea;       
+    --ink:#3b2f2f;         
+    --muted:#7a5e57;       
+    --brand:#8b5e34;       
+    --brand-2:#a47148;      
+    --ok:#3e7b52;           
+    --card:#fffaf3;        
+    --ring: 0 1px 0 rgba(20,12,8,.04), 0 12px 36px rgba(35,20,10,.10);
     --radius:16px;
   }
+
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; background:
-     radial-gradient(800px 500px at 10% -10%, #e9f0ff 0%, transparent 60%),
-     radial-gradient(800px 500px at 110% 10%, #eafaf2 0%, transparent 60%),
-     var(--bg);
+    margin:0;
+    background:
+      radial-gradient(900px 500px at 10% -10%, #f1e6d7 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #efe5d8 0%, transparent 60%),
+      var(--bg);
     color:var(--ink);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial;
   }
+
   header{
-    max-width:920px; margin:42px auto 18px; padding:0 20px; text-align:center;
+    max-width:980px; margin:42px auto 18px; padding:0 20px; text-align:center;
   }
   h1{
-    font-size:clamp(1.5rem, 2.2vw + 1rem, 2rem);
-    margin:0 0 4px; letter-spacing:.3px;
+    font-size:clamp(1.6rem, 2.4vw + 1rem, 2.2rem);
+    margin:0 0 6px; letter-spacing:.2px;
   }
-  .sub{color:var(--muted); font-size:.95rem}
-  .wrap{max-width:920px; margin:0 auto 60px; padding:0 20px;}
+  .sub{color:var(--muted); font-size:.98rem}
+
+  .wrap{max-width:980px; margin:0 auto 60px; padding:0 20px;}
   .grid{display:grid; grid-template-columns: 1.1fr .9fr; gap:22px}
-  @media (max-width: 900px){ .grid{grid-template-columns:1fr}}
+  @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+
   .card{
-    background:var(--card); border-radius:var(--radius);
-    box-shadow:var(--ring); border:1px solid #eef1f6;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--ring);
+    border:1px solid #eadfce;
+    overflow:hidden;
   }
   .pad{padding:20px}
-  .row{display:flex; gap:12px; align-items:center; margin:14px 0 18px}
-  .ip-input{
-    flex:1; padding:14px 14px; border-radius:12px; border:1px solid #e3e8f2; outline:none;
-    background:#fbfcff; color:var(--ink); font-size:1rem;
-  }
-  .ip-input:focus{border-color:#cfd9ff; box-shadow:0 0 0 4px rgba(77,124,255,.12)}
-  .btn{
-    border:none; padding:13px 16px; border-radius:12px; cursor:pointer;
-    font-weight:700; background:linear-gradient(160deg, var(--brand), #6aa1ff); color:white;
-  }
-  .btn-ghost{
-    background:#f0f4ff; color:#2f4bb4; border:1px solid #dae4ff;
-  }
-  .kvs{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  @media (max-width:560px){ .kvs{grid-template-columns:1fr} }
-  .kv{
-    background:#f9fbff; border:1px solid #eef2fa; border-radius:12px; padding:12px 14px;
-  }
-  .kv label{display:block; font-size:.8rem; color:var(--muted)}
-  .kv div{font-weight:800; margin-top:4px; word-break:break-all}
-  .copy{
-    padding:8px 12px; border-radius:10px; border:1px dashed #c9d6ff; background:#f4f7ff;
-    font-size:.9rem; cursor:pointer; margin-left:auto;
-  }
-  .hint{font-size:.9rem; color:var(--muted)}
-  #map{height:340px; border-radius:0 0 var(--radius) var(--radius); border-top:1px solid #eef1f6}
+
   .title{
     display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px
   }
+
   .badge{
-    background:#ebfff5; color:#067a46; border:1px solid #bbf7d0; font-size:.75rem;
+    background:#efe7de; color:#5c3f29; border:1px solid #e2d3bf; font-size:.74rem;
     padding:6px 10px; border-radius:999px; font-weight:700; letter-spacing:.2px;
   }
+
+  .row{display:flex; gap:12px; align-items:center; margin:14px 0 18px}
+  .ip-input{
+    flex:1; padding:14px 14px; border-radius:12px; border:1px solid #e6d8c7; outline:none;
+    background:#fdf7ef; color:var(--ink); font-size:1rem;
+  }
+  .ip-input:focus{border-color:#d7bfa3; box-shadow:0 0 0 4px rgba(139,94,52,.14)}
+
+  .btn{
+    border:none; padding:13px 16px; border-radius:12px; cursor:pointer;
+    font-weight:800; color:white;
+    background:linear-gradient(160deg, var(--brand), var(--brand-2));
+    transition:transform .06s ease, filter .2s ease;
+  }
+  .btn:hover{filter:brightness(1.04)}
+  .btn:active{transform:translateY(1px)}
+
+  .btn-ghost{
+    background:#f3e8dc; color:#5b3d26; border:1px solid #e6d5c2;
+  }
+
+  .btn-wire{
+    background:transparent; color:var(--brand); border:1px dashed #d9c3ad;
+  }
+
+  .kvs{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:560px){ .kvs{grid-template-columns:1fr} }
+  .kv{
+    background:#fbf3e8; border:1px solid #efdfcc; border-radius:12px; padding:12px 14px;
+  }
+  .kv label{display:block; font-size:.8rem; color:var(--muted)}
+  .kv div{font-weight:800; margin-top:4px; word-break:break-all}
+
+  .copy{
+    padding:8px 12px; border-radius:10px; border:1px dashed #d9c3ad; background:#f7eee4;
+    font-size:.9rem; cursor:pointer; margin-left:auto; color:#5b3d26; font-weight:700;
+  }
+
+  .hint{font-size:.92rem; color:var(--muted)}
+  #map{height:360px; border-top:1px solid #eadfce}
+
+  footer{max-width:980px; margin:26px auto 40px; padding:0 20px; color:var(--muted); text-align:center}
+
   .toast{
-    position:fixed; inset:auto 20px 20px auto; background:#0f1a2a; color:#fff; padding:12px 14px;
+    position:fixed; inset:auto 20px 20px auto; background:#2f241f; color:#fff; padding:12px 14px;
     border-radius:12px; box-shadow:var(--ring); opacity:0; transform:translateY(6px);
     transition:all .22s ease; pointer-events:none;
   }
   .toast.show{opacity:1; transform:translateY(0)}
-  footer{max-width:920px; margin:26px auto 40px; padding:0 20px; color:var(--muted); text-align:center}
+
+  /* Settings drawer */
+  .settings{
+    position:fixed; right:20px; top:20px; z-index:9999;
+    display:flex; gap:8px; align-items:center;
+  }
+  .drawer{
+    position:fixed; right:20px; top:64px; width:320px; max-width:92vw;
+    background:var(--card); border:1px solid #eadfce; border-radius:14px; box-shadow:var(--ring);
+    padding:14px; display:none;
+  }
+  .drawer.show{display:block}
+  .field{display:grid; gap:6px; margin:8px 0 10px}
+  .field label{font-size:.82rem; color:var(--muted)}
+  .field input, .field select{
+    padding:10px 12px; border-radius:10px; border:1px solid #e6d8c7; background:#fffaf5; outline:none;
+  }
 </style>
 </head>
 <body>
   <header>
     <h1>Just My Type (IP)</h1>
-    <div class="sub">Enter any IP (leave blank to use your own). We’ll show its “type” and where it likely geolocates.</div>
+    <div class="sub">Enter any IP (leave blank to use your own). We’ll show its type and where it likely geolocates.</div>
   </header>
+
+  <!-- Tiny settings: place to put your Map Tiles API key -->
+  <div class="settings">
+    <button class="btn btn-wire" id="openSettings" title="Map settings">Map Settings</button>
+  </div>
+  <div class="drawer" id="drawer">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <strong style="font-size:.95rem">Map Provider</strong>
+      <button class="btn btn-ghost" id="closeSettings">Close</button>
+    </div>
+    <p class="hint" style="margin:4px 0 10px">
+      Optional: Paste a Map Tiles API key (e.g., <em>MapTiler</em>). If empty, we’ll use OpenStreetMap.
+    </p>
+    <div class="field">
+      <label for="provider">Tiles Provider</label>
+      <select id="provider">
+        <option value="osm">OpenStreetMap (default)</option>
+        <option value="maptiler">MapTiler (needs API key)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="apiKey">API Key (kept in your browser only)</label>
+      <input id="apiKey" placeholder="e.g. MT_your_maptiler_key_here" />
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" id="resetKey">Reset</button>
+      <button class="btn" id="saveKey">Save</button>
+    </div>
+  </div>
 
   <main class="wrap grid" aria-live="polite">
     <!-- Left card: details -->
@@ -132,9 +206,9 @@
       <h3 style="margin:.2rem 0 8px">What’s an IP “type”?</h3>
       <p class="hint" style="line-height:1.6">
         We classify by format &amp; routability (IPv4 vs IPv6; public vs private/reserved).
-        Geolocation is approximate &mdash; it’s usually the ISP’s gateway city, not your street.
+        Geolocation is approximate — usually the ISP gateway city, not your street.
       </p>
-      <hr style="border:none;border-top:1px solid #eef1f6;margin:16px 0">
+      <hr style="border:none;border-top:1px solid #eadfce;margin:16px 0">
       <ul class="hint" style="padding-left:18px; line-height:1.8">
         <li>Leave the box empty and press <em>My IP</em> to detect your address.</li>
         <li>Click <em>Copy results</em> to share a snapshot.</li>
@@ -144,7 +218,6 @@
   </main>
 
   <div class="toast" id="toast">Copied!</div>
-
   <footer>© <span id="yr"></span> Just My Type (IP)</footer>
 
 <script>
@@ -156,22 +229,69 @@
   };
   $("#yr").textContent = new Date().getFullYear();
 
-  // Map
-  let map, marker;
+  // ── Settings drawer (Map API place) ──────────────────────────────────────────
+  const drawer = $("#drawer");
+  $("#openSettings").addEventListener("click", ()=> drawer.classList.add("show"));
+  $("#closeSettings").addEventListener("click", ()=> drawer.classList.remove("show"));
+
+  const providerSel = $("#provider");
+  const apiKeyIn = $("#apiKey");
+
+  // load saved
+  const savedProvider = localStorage.getItem("tilesProvider") || "osm";
+  const savedKey = localStorage.getItem("tilesKey") || "";
+  providerSel.value = savedProvider;
+  apiKeyIn.value = savedKey;
+
+  $("#saveKey").addEventListener("click", ()=>{
+    localStorage.setItem("tilesProvider", providerSel.value);
+    localStorage.setItem("tilesKey", apiKeyIn.value.trim());
+    drawer.classList.remove("show");
+    reloadTiles();
+  });
+  $("#resetKey").addEventListener("click", ()=>{
+    providerSel.value = "osm"; apiKeyIn.value = "";
+    localStorage.removeItem("tilesProvider");
+    localStorage.removeItem("tilesKey");
+    reloadTiles();
+  });
+
+  // ── Map init ────────────────────────────────────────────────────────────────
+  let map, marker, tileLayer;
+  function makeTileLayer(){
+    const provider = localStorage.getItem("tilesProvider") || "osm";
+    const key = localStorage.getItem("tilesKey") || "";
+
+    if(provider === "maptiler" && key){
+      // MapTiler basic tiles (works nicely with Leaflet)
+      const url = `https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`;
+      return L.tileLayer(url, { maxZoom: 19, attribution: '&copy; MapTiler &copy; OpenStreetMap' });
+    }
+    // Default: OSM
+    return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      { maxZoom: 19, attribution: '&copy; OpenStreetMap' });
+  }
+
   function initMap(){
     map = L.map('map', { zoomControl:true, attributionControl:false }).setView([20,0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(map);
+    tileLayer = makeTileLayer().addTo(map);
   }
+
+  function reloadTiles(){
+    if(!map) return;
+    if(tileLayer) tileLayer.remove();
+    tileLayer = makeTileLayer().addTo(map);
+  }
+
   initMap();
 
-  // Validators
+  // ── Validators ──────────────────────────────────────────────────────────────
   const reV4 = /^(25[0-5]|2[0-4]\d|[01]?\d\d?)(\.(25[0-5]|2[0-4]\d|[01]?\d\d?)){3}$/;
   const reV6 = /^(([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}|([0-9a-f]{1,4}:){1,7}:|([0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}|([0-9a-f]{1,4}:){1,5}(:[0-9a-f]{1,4}){1,2}|([0-9a-f]{1,4}:){1,4}(:[0-9a-f]{1,4}){1,3}|([0-9a-f]{1,4}:){1,3}(:[0-9a-f]{1,4}){1,4}|([0-9a-f]{1,4}:){1,2}(:[0-9a-f]{1,4}){1,5}|[0-9a-f]{1,4}:((:[0-9a-f]{1,4}){1,6})|:((:[0-9a-f]{1,4}){1,7})|fe80:(:[0-9a-f]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3,3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)|([0-9a-f]{1,4}:){1,4}:((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3,3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?))$/i;
 
   function kind(ip){
     if(!ip) return "Unknown";
     if(reV4.test(ip)){
-      // RFC1918/private ranges
       const oct = ip.split('.').map(n=>+n);
       const priv = (oct[0]===10) || (oct[0]===172 && oct[1]>=16 && oct[1]<=31) || (oct[0]===192 && oct[1]===168);
       const loop = (oct[0]===127);
@@ -191,8 +311,8 @@
     return "Unrecognized";
   }
 
+  // ── IP detection & lookup ───────────────────────────────────────────────────
   async function detectMyIP(){
-    // best-effort: fetch v4 and v6
     const [v4,v6] = await Promise.allSettled([
       fetch('https://api.ipify.org?format=json').then(r=>r.json()),
       fetch('https://api64.ipify.org?format=json').then(r=>r.json())
@@ -202,14 +322,14 @@
   }
 
   async function lookup(ip){
-    // if no ip, detect user's
     const targetIP = ip?.trim() || await detectMyIP();
     if(!targetIP){ paint({ip:"Unavailable", type:"—"}); return; }
 
     paint({ ip:"Loading…", type:"…" });
 
     try{
-      const geo = await fetch(https://ipapi.co/${encodeURIComponent(targetIP)}/json/).then(r=>r.json());
+      // ✅ fixed template string
+      const geo = await fetch(`https://ipapi.co/${encodeURIComponent(targetIP)}/json/`).then(r=>r.json());
       const out = {
         ip: geo.ip || targetIP,
         type: kind(targetIP),
@@ -220,11 +340,12 @@
         lat: parseFloat(geo.latitude), lon: parseFloat(geo.longitude)
       };
       paint(out);
-      // map
+      // map update
       if(!isNaN(out.lat) && !isNaN(out.lon)){
         map.setView([out.lat,out.lon], 9);
         if(marker) marker.remove();
-        marker = L.marker([out.lat,out.lon]).addTo(map).bindPopup(${out.city?out.city+', ':''}${out.country}).openPopup();
+        marker = L.marker([out.lat,out.lon]).addTo(map)
+          .bindPopup(`${out.city ? out.city + ', ' : ''}${out.country}`).openPopup(); //  fixed template string
       }else{
         map.setView([20,0], 2);
         if(marker) marker.remove();
@@ -267,7 +388,7 @@ ISP: ${fields.isp.textContent}`;
     });
   });
 
-  // initial load: user IP
+  // initial load
   lookup("");
 </script>
 </body>
