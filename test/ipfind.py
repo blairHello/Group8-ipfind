@@ -39,8 +39,6 @@ def home():
         isp=details.get("org", "Rate Limited"),
         asn=details.get("asn", "Rate Limited"),
         ccode=details.get("country_code", "Rate Limited"),
-        user_ip=user_ip,
-        user_details=user_details,
         details=details
     )
 
