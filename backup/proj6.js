@@ -114,67 +114,7 @@ const $ = (s) => document.querySelector(s);
       }
 
       // ── IP detection & lookup ───────────────────────────────────────────────────
-      async function detectMyIP() {
-        const [v4, v6] = await Promise.allSettled([
-          fetch("https://api.ipify.org?format=json").then((r) => r.json()),
-          fetch("https://api64.ipify.org?format=json").then((r) => r.json()),
-        ]);
-        const ip =
-          (v6.status === "fulfilled" && v6.value.ip) ||
-          (v4.status === "fulfilled" && v4.value.ip) ||
-          "";
-        return ip;
-      }
 
-      async function lookup(ip) {
-        const targetIP = ip?.trim() || (await detectMyIP());
-        if (!targetIP) {
-          paint({ ip: "Unavailable", type: "—" });
-          return;
-        }
-
-        paint({ ip: "Loading…", type: "…" });
-
-        try {
-          // ✅ fixed template string
-          const geo = await fetch(
-            `https://ipapi.co/${encodeURIComponent(targetIP)}/json/`
-          ).then((r) => r.json());
-          const out = {
-            ip: geo.ip || targetIP,
-            type: kind(targetIP),
-            city: geo.city || "—",
-            region: geo.region || "—",
-            country: geo.country_name || geo.country || "—",
-            isp: geo.org || geo.asn || "—",
-            lat: parseFloat(geo.latitude),
-            lon: parseFloat(geo.longitude),
-          };
-          paint(out);
-          // map update
-          if (!isNaN(out.lat) && !isNaN(out.lon)) {
-            map.setView([out.lat, out.lon], 9);
-            if (marker) marker.remove();
-            marker = L.marker([out.lat, out.lon])
-              .addTo(map)
-              .bindPopup(`${out.city ? out.city + ", " : ""}${out.country}`)
-              .openPopup(); //  fixed template string
-          } else {
-            map.setView([20, 0], 2);
-            if (marker) marker.remove();
-          }
-        } catch (e) {
-          console.error(e);
-          paint({
-            ip: targetIP,
-            type: kind(targetIP),
-            city: "—",
-            region: "—",
-            country: "—",
-            isp: "—",
-          });
-        }
-      }
 
       function paint(d) {
         fields.ip.textContent = d.ip ?? "—";
@@ -185,30 +125,68 @@ const $ = (s) => document.querySelector(s);
         fields.isp.textContent = d.isp ?? "—";
       }
 
-      // UI events
-      $("#lookup").addEventListener("click", () => lookup(ipIn.value));
-      $("#mine").addEventListener("click", async () => {
-        ipIn.value = "";
-        await lookup("");
-      });
-      ipIn.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") $("#lookup").click();
-      });
+     document.addEventListener("DOMContentLoaded", () => {
+    const ipIn = document.getElementById("ipIn");
+    const lookupBtn = document.getElementById("lookup");
 
-      // Copy all
-      $("#copyAll").addEventListener("click", () => {
-        const text = `IP: ${fields.ip.textContent}
-Type: ${fields.type.textContent}
-City: ${fields.city.textContent}
-Region: ${fields.region.textContent}
-Country: ${fields.country.textContent}
-ISP: ${fields.isp.textContent}`;
-        navigator.clipboard.writeText(text).then(() => {
-          const t = $("#toast");
-          t.classList.add("show");
-          setTimeout(() => t.classList.remove("show"), 1200);
+    lookupBtn.addEventListener("click", async () => {
+    
+        const formData = new FormData();
+        formData.append('ip', ipIn.value);
+        
+        const response = await fetch("/", {
+            method: "POST",
+            body: formData
         });
-      });
+    });
+});
 
-      // initial load
-      lookup("");
+      async function lookup(ip) {
+  try {
+    const res = await fetch("/lookup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip })
+    });
+
+    if (!res.ok) throw new Error("Server error: " + res.status);
+
+    const data = await res.json();
+    console.log("Lookup result:", data);
+    // update DOM with details here
+  } catch (err) {
+    console.error("Lookup failed:", err);
+  }
+}
+
+
+
+      
+      // Copy all
+const field = {
+    ip: document.getElementById("ip"),
+    type: document.getElementById("type"),
+    city: document.getElementById("city"),
+    region: document.getElementById("region"),
+    country: document.getElementById("country"),
+    isp: document.getElementById("isp"),
+    asn: document.getElementById("asn"),
+    ccode: document.getElementById("ccode")
+  };
+
+  /*document.getElementById("copyAll").addEventListener("click", () => {
+    const text = `IP: ${fields.ip.textContent}
+        Type: ${fields.type.textContent}
+        City: ${fields.city.textContent}
+        Region: ${fields.region.textContent}
+        Country: ${fields.country.textContent}
+        ISP: ${fields.isp.textContent}`;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const t = document.getElementById("toast");
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 1200);
+    });
+  });
+*/
+      

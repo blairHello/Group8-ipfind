@@ -91,22 +91,8 @@
                     class="ip-input"
                     name="IpIn"
                     placeholder="e.g. 8.8.8.8 or 2001:4860:4860::8888"
-                    title="Please enter a valid IPv4 or IPv6 address"
-                    pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$"
-                    required
                   />
                   <button type="submit" class="btn" id="lookup">Lookup</button>
-
-                  <div
-                    id="ipError"
-                    class="error-message"
-                    style="
-                      display: none;
-                      color: #ff4444;
-                      font-size: 0.9em;
-                      margin-top: 5px;
-                    "
-                  ></div>
                   <button class="btn btn-ghost" id="mine" title="Use my IP">
                     My IP
                   </button>
@@ -115,59 +101,6 @@
 
               <div class="kvs">
                 {% if user_ip %}
-                <div class="kv">
-                  <label>IPv4 Address</label>
-                  <div id="ipOut">{{ ip }}</div>
-                </div>
-                {% if ip_version == 4 %}
-                <div class="kv">
-                  <label>IP type</label>
-                  <div id="typeOut">IPv4</div>
-                </div>
-
-                {% elif ip_version == 6 %}
-                <div class="kv">
-                  <label>IP type</label>
-                  <div id="typeOut">IPv6</div>
-                </div>
-
-                {% else %}
-                <div class="kv">
-                  <label>IP type</label>
-                  <div id="typeOut">—</div>
-                </div>
-
-                {% endif %}
-                <div class="kv">
-                  <label>City</label>
-                  <div id="cityOut">{{ city }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Region</label>
-                  <div id="regionOut">{{ region }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country</label>
-                  <div id="countryOut">{{ country }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ISP</label>
-                  <div id="ispOut">{{ isp }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country Code</label>
-                  <div id="ispOut">{{ ccode }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ASN</label>
-                  <div id="ispOut">{{ asn }}</div>
-                </div>
-                {% elif ipv4 or ipv6 %}
                 <div class="kv">
                   <label>IPv4 Address</label>
                   <div id="ipOut">{{ ipv4 }}</div>
@@ -208,6 +141,29 @@
                   <div id="ispOut">{{ asn }}</div>
                 </div>
 
+                {% else %} {% endif %} {% if ipv4 %}
+
+                <div class="kv">
+                  <label>IPv4 Address</label>
+                  <div id="ipOut">{{ ipv4 }}</div>
+                </div>
+
+                <div class="kv">
+                  <label>IPv6 Address</label>
+                  <div id="typeOut">{{ ipv6 }}</div>
+                </div>
+
+                {% else %}
+                <div class="kv">
+                  <label>IPv4 Address</label>
+                  <div id="ipOut">—</div>
+                </div>
+
+                <div class="kv">
+                  <label>IPv6 Address</label>
+                  <div id="typeOut">—</div>
+                </div>
+                {% endif %} {% if details %}
                 <div class="kv">
                   <label>City</label>
                   <div id="cityOut">{{ city }}</div>
@@ -239,45 +195,34 @@
                 </div>
                 {% else %}
                 <div class="kv">
-                  <label>IPv4 Address</label>
-                  <div id="ipOut">—<</div>
-                </div>
-
-                <div class="kv">
-                  <label>IPv6 Address</label>
-                  <div id="typeOut">—<</div>
-                </div>
-
-                <div class="kv">
                   <label>City</label>
-                  <div id="cityOut">—<</div>
+                  <div id="cityOut">—</div>
                 </div>
 
                 <div class="kv">
                   <label>Region</label>
-                  <div id="regionOut">—<</div>
+                  <div id="regionOut">—</div>
                 </div>
 
                 <div class="kv">
                   <label>Country</label>
-                  <div id="countryOut">—<</div>
+                  <div id="countryOut">—</div>
                 </div>
 
                 <div class="kv">
                   <label>ISP</label>
-                  <div id="ispOut">—<</div>
+                  <div id="ispOut">—</div>
                 </div>
 
                 <div class="kv">
                   <label>Country Code</label>
-                  <div id="ispOut">—<</div>
+                  <div id="ispOut">—</div>
                 </div>
 
                 <div class="kv">
                   <label>ASN</label>
                   <div id="ispOut">—</div>
                 </div>
-
                 {% endif %}
               </div>
             </div>
