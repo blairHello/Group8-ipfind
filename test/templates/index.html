@@ -224,7 +224,6 @@
                 {% endif %}
               </div>
             </div>
-            <div id="map"></div>
           </div>
         </div>
       </section>
@@ -241,12 +240,17 @@
           style="border: none; border-top: 1px solid #eadfce; margin: 16px 0"
         />
         <ul class="hint" style="padding-left: 18px; line-height: 1.8">
+                 <h4 class="hint" style="margin:14px 0 6px">Map (approximate)</h4>
+
           <li>
             Leave the box empty and press <em>My IP</em> to detect your address.
           </li>
           <li>Click <em>Copy results</em> to share a snapshot.</li>
           <li>No cookies, no tracking pixels.</li>
         </ul>
+          <div id="miniMap" class="map-embed" aria-label="Approximate IP geolocation map"></div>  <!-- dito yung map -->
+         
+          
       </aside>
     </main>
 

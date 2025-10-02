@@ -120,3 +120,14 @@
   .field input, .field select{
     padding:10px 12px; border-radius:10px; border:1px solid #e6d8c7; background:#fffaf5; outline:none;
   }
+
+  /* Small map in the right card */
+.map-embed{
+  height: 280px;                 /* adjust to taste */
+  border-radius: 12px;
+  border: 1px solid #eadfce;
+  background: #fdf7ef;           /* matches your brown aesthetic */
+  box-shadow: var(--ring);
+  margin-top: 6px;
+  overflow: hidden;
+}
