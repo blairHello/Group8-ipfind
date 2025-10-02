@@ -1,4 +1,4 @@
- :root{
+:root{
     /* pinalitan ko brown aesthetic nlng suri */
     --bg:#f7f2ea;       
     --ink:#3b2f2f;         
@@ -46,7 +46,7 @@
   .pad{padding:20px}
 
   .title{
-    display:flex; align-items:center; justify-content:center; margin-bottom:8px
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px
   }
 
   .badge{
@@ -120,3 +120,14 @@
   .field input, .field select{
     padding:10px 12px; border-radius:10px; border:1px solid #e6d8c7; background:#fffaf5; outline:none;
   }
+
+  /* Small map in the right card */
+.map-embed{
+  height: 280px;                 /* adjust to taste */
+  border-radius: 12px;
+  border: 1px solid #eadfce;
+  background: #fdf7ef;           /* matches your brown aesthetic */
+  box-shadow: var(--ring);
+  margin-top: 6px;
+  overflow: hidden;
+}

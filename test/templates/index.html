@@ -79,7 +79,7 @@
         <div class="pad">
           <div class="title">
             <div>
-              <!--<div class="badge">Instant lookup</div>
+              <div class="badge">Instant lookup</div>
               <h2 style="margin: 0.4rem 0 0; font-size: 1.05rem">
                 Enter IP Address
               </h2>
@@ -96,7 +96,6 @@
                   My IP
                 </button>
               </div>
-            -->
 
               <div class="kvs">
                 {% if user_ip %}
@@ -225,12 +224,11 @@
                 {% endif %}
               </div>
             </div>
-            <div id="map"></div>
           </div>
         </div>
       </section>
 
-      
+      <!-- Right card: mini explainer -->
       <aside class="card pad">
         <h3 style="margin: 0.2rem 0 8px">What’s an IP “type”?</h3>
         <p class="hint" style="line-height: 1.6">
@@ -241,18 +239,22 @@
         <hr
           style="border: none; border-top: 1px solid #eadfce; margin: 16px 0"
         />
-        <!--<ul class="hint" style="padding-left: 18px; line-height: 1.8">
+        <ul class="hint" style="padding-left: 18px; line-height: 1.8">
+                 <h4 class="hint" style="margin:14px 0 6px">Map (approximate)</h4>
+
           <li>
             Leave the box empty and press <em>My IP</em> to detect your address.
           </li>
           <li>Click <em>Copy results</em> to share a snapshot.</li>
           <li>No cookies, no tracking pixels.</li>
         </ul>
-      -->
+          <div id="miniMap" class="map-embed" aria-label="Approximate IP geolocation map"></div>  <!-- dito yung map -->
+         
+          
       </aside>
     </main>
 
-    <!--<div class="toast" id="toast">Copied!</div>-->
+    <div class="toast" id="toast">Copied!</div>
     <footer>© <span id="yr"></span> Just My Type (IP)</footer>
   </body>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
