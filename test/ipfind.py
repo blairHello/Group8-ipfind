@@ -98,8 +98,8 @@ def get_ip_details_fallback(ip_address):
                 "region": data.get("regionName", "—"),
                 "country_name": data.get("country", "—"),
                 "org": data.get("isp", "—"),
-                "asn": data.get("as", "—").split()[0] if data.get("as") else "—",
-                "country_code": data.get("countryCode", "—")
+                "asn": data.get("asn", "—").split()[0] if data.get("as") else "—",
+                "country_code": data.get("country_code", "—")
             }
         return {}
     except:
