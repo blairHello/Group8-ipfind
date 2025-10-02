@@ -104,6 +104,9 @@ def get_ip_details_fallback(ip_address):
         return {}
     except:
         return {}
+    
+
+  
 
 
 if __name__ == "__main__":
