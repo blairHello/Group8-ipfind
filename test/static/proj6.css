@@ -1,4 +1,4 @@
- :root{
+:root{
     /* pinalitan ko brown aesthetic nlng suri */
     --bg:#f7f2ea;       
     --ink:#3b2f2f;         
@@ -46,7 +46,7 @@
   .pad{padding:20px}
 
   .title{
-    display:flex; align-items:center; justify-content:center; margin-bottom:8px
+    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px
   }
 
   .badge{

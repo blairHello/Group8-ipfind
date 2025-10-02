@@ -90,7 +90,7 @@ const reV6 = /^(([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}|([0-9a-f]{1,4}:){1,7}:|([0-9a-f
 function kind(ip) {
   if (!ip) return "Unknown";
   if (reV4.test(ip)) {
-    const oct = ip.split(".").map((n) => +n);
+    const oct = ip.split(".").map(segment => +segment);
     const priv = oct[0] === 10 || (oct[0] === 172 && oct[1] >= 16 && oct[1] <= 31) || (oct[0] === 192 && oct[1] === 168);
     const loop = oct[0] === 127;
     const link = oct[0] === 169 && oct[1] === 254;
@@ -125,7 +125,7 @@ async function lookup(ip) {
   paint({ ip:"Loading…", type:"…" });
 
   try {
-    const geo = await fetch(`https://ipapi.co/${encodeURIComponent(targetIP)}/json/`).then(r=>r.json());
+    const geo = await fetch(`https://ipapi.co/${encodeURIComponent(targetIP)}/json/`).then(r => r.json());
     const out = {
       ip: geo.ip || targetIP,
       type: kind(targetIP),
@@ -139,16 +139,23 @@ async function lookup(ip) {
     paint(out);
 
     if (!isNaN(out.lat) && !isNaN(out.lon)) {
-      map.setView([out.lat, out.lon], 9);
-      if (ipMarker) ipMarker.remove();
-      ipMarker = L.marker([out.lat, out.lon]).addTo(map)
-                  .bindPopup(`${out.city ? out.city + ", " : ""}${out.country}`)
-                  .openPopup();
-    }
-  } catch (e) {
-    console.error(e);
-    paint({ ip: targetIP, type: kind(targetIP), city:"—", region:"—", country:"—", isp:"—" });
-  }
+  map.setView([out.lat, out.lon], 9);
+  if (ipMarker) ipMarker.remove();
+  ipMarker = L.marker([out.lat, out.lon]).addTo(map)
+              .bindPopup(`${out.city ? out.city + ", " : ""}${out.country}`)
+              .openPopup();
+}
+} catch (e) {
+console.error(e);
+paint({ 
+  ip: targetIP, 
+  type: kind(targetIP), 
+  city: "—", 
+  region: "—", 
+  country: "—", 
+  isp: "—" 
+});
+}
 }
 
 
