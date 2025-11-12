@@ -4,150 +4,41 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Just Type (IP)</title>
-
-    <style>
-      :root {
-        --bg: #f7f2ea;
-        --ink: #3b2f2f;
-        --muted: #7a5e57;
-        --brand: #8b5e34;
-        --brand-2: #a47148;
-        --ok: #3e7b52;
-        --card: #fffaf3;
-        --ring: 0 1px 0 rgba(20, 12, 8, 0.04), 0 12px 36px rgba(35, 20, 10, 0.1);
-        --radius: 16px;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        background: radial-gradient(
-            900px 500px at 10% -10%,
-            #f1e6d7 0%,
-            transparent 60%
-          ),
-          radial-gradient(900px 500px at 110% 10%, #efe5d8 0%, transparent 60%),
-          var(--bg);
-        color: var(--ink);
-        font-family: system-ui, -apple-system, "Segoe UI", Inter, Roboto, Arial;
-      }
-      header {
-        text-align: center;
-        margin: 42px 0 18px;
-      }
-      h1 {
-        margin: 0 0 6px;
-      }
-      .wrap {
-        max-width: 960px;
-        margin: auto;
-        padding: 20px;
-      }
-      .card {
-        background: var(--card);
-        border-radius: var(--radius);
-        box-shadow: var(--ring);
-        border: 1px solid #eadfce;
-        padding: 20px;
-        margin: 16px 0;
-      }
-      .row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin: 14px 0;
-      }
-      .ip-input {
-        flex: 1;
-        padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #e6d8c7;
-        background: #fdf7ef;
-        font-size: 1rem;
-      }
-      .btn {
-        border: none;
-        padding: 12px 16px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 700;
-        color: white;
-        background: linear-gradient(160deg, var(--brand), var(--brand-2));
-      }
-      .btn:hover {
-        filter: brightness(1.1);
-      }
-      .btn-ghost {
-        background: #f3e8dc;
-        color: #5b3d26;
-        border: 1px solid #e6d5c2;
-      }
-      .kvs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
-      .kv {
-        background: #fbf3e8;
-        border: 1px solid #efdfcc;
-        border-radius: 12px;
-        padding: 10px;
-      }
-      .kv label {
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      .kv div {
-        font-weight: 700;
-        margin-top: 4px;
-      }
-      pre {
-        background: #f7eee4;
-        padding: 12px;
-        border-radius: 10px;
-        white-space: pre-wrap;
-      }
-      .badge {
-        background: #efe7de;
-        color: #5c3f29;
-        border: 1px solid #e2d3bf;
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-weight: 700;
-      }
-      footer {
-        text-align: center;
-        color: var(--muted);
-        margin: 24px 0;
-      }
-      #miniMap {
-        height: 280px;
-        border-radius: 12px;
-        border: 1px solid #eadfce;
-        margin-top: 10px;
-      }
-    </style>
-
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='proj6.css') }}"
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src=""></script>
   </head>
-
+  
   <body>
     <header>
       <h1>Just Type (IP)</h1>
       <p>
-        Enter any IP or leave blank to detect your own. Includes subnet
-        calculator and network diagnostics.
+        Network tools made simple — diagnostics, lookup, and subnet insights.
       </p>
     </header>
 
     <main class="wrap">
+      <!-- Network Diagnostic FIRST -->
+      <section class="card" style="flex: 1 1 100%">
+        <div class="badge">Network Diagnostic</div>
+        <div class="row">
+          <input
+            id="diagInput"
+            class="ip-input"
+            placeholder="Enter domain or IP (e.g. google.com)"
+          />
+          <button class="btn" id="pingBtn">Ping</button>
+          <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
+        </div>
+        <pre id="diagOutput">Waiting for input…</pre>
+      </section>
+
       <!-- IP Lookup -->
       <section class="card">
         <div class="badge">IP Lookup</div>
@@ -197,48 +88,32 @@
           />
           <button class="btn" id="calcSubnet">Calculate</button>
         </div>
-        <div class="kvs">
-          <div class="kv">
+        <div class="subnet-output">
+          <div class="subnet-box">
             <label>Network Address</label>
             <div id="netAddr">—</div>
           </div>
-          <div class="kv">
+          <div class="subnet-box">
             <label>Broadcast Address</label>
             <div id="bcastAddr">—</div>
           </div>
-          <div class="kv">
+          <div class="subnet-box">
             <label>Subnet Mask</label>
             <div id="maskAddr">—</div>
           </div>
-          <div class="kv">
+          <div class="subnet-box">
             <label>Host Range</label>
             <div id="hostRange">—</div>
           </div>
-          <div class="kv">
+          <div class="subnet-box">
             <label>Total Hosts</label>
             <div id="totalHosts">—</div>
           </div>
         </div>
       </section>
-
-      <!-- Network Diagnostic -->
-      <section class="card">
-        <div class="badge">Network Diagnostic</div>
-        <div class="row">
-          <input
-            id="diagInput"
-            class="ip-input"
-            placeholder="Enter domain or IP (e.g. google.com)"
-          />
-          <button class="btn" id="pingBtn">Ping</button>
-          <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
-        </div>
-        <pre id="diagOutput">Waiting for input…</pre>
-      </section>
     </main>
 
     <footer>© <span id="yr"></span> Just Type (IP)</footer>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{{ url_for('static', filename='proj6.js') }}"></script>
   </body>
 </html>
