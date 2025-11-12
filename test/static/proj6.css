@@ -1,133 +1,58 @@
-:root{
-    /* pinalitan ko brown aesthetic nlng suri */
-    --bg:#f7f2ea;       
-    --ink:#3b2f2f;         
-    --muted:#7a5e57;       
-    --brand:#8b5e34;       
-    --brand-2:#a47148;      
-    --ok:#3e7b52;           
-    --card:#fffaf3;        
-    --ring: 0 1px 0 rgba(20,12,8,.04), 0 12px 36px rgba(35,20,10,.10);
-    --radius:16px;
-  }
-
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    background:
-      radial-gradient(900px 500px at 10% -10%, #f1e6d7 0%, transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, #efe5d8 0%, transparent 60%),
-      var(--bg);
-    color:var(--ink);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial;
-  }
-
-  header{
-    max-width:980px; margin:42px auto 18px; padding:0 20px; text-align:center;
-  }
-  h1{
-    font-size:clamp(1.6rem, 2.4vw + 1rem, 2.2rem);
-    margin:0 0 6px; letter-spacing:.2px;
-  }
-  .sub{color:var(--muted); font-size:.98rem}
-
-  .wrap{max-width:980px; margin:0 auto 60px; padding:0 20px;}
-  .grid{display:grid; grid-template-columns: 1.1fr .9fr; gap:22px}
-  @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
-
-  .card{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:var(--ring);
-    border:1px solid #eadfce;
-    overflow:hidden;
-  }
-  .pad{padding:20px}
-
-  .title{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px
-  }
-
-  .badge{
-    background:#efe7de; color:#5c3f29; border:1px solid #e2d3bf; font-size:.74rem;
-    padding:6px 10px; border-radius:999px; font-weight:700; letter-spacing:.2px;
-    text-align: center;
-  }
-
-  .row{display:flex; gap:12px; align-items:center; margin:14px 0 18px}
-  .ip-input{
-    flex:1; padding:14px 14px; border-radius:12px; border:1px solid #e6d8c7; outline:none;
-    background:#fdf7ef; color:var(--ink); font-size:1rem;
-  }
-  .ip-input:focus{border-color:#d7bfa3; box-shadow:0 0 0 4px rgba(139,94,52,.14)}
-
-  .btn{
-    border:none; padding:13px 16px; border-radius:12px; cursor:pointer;
-    font-weight:800; color:white;
-    background:linear-gradient(160deg, var(--brand), var(--brand-2));
-    transition:transform .06s ease, filter .2s ease;
-  }
-  .btn:hover{filter:brightness(1.04)}
-  .btn:active{transform:translateY(1px)}
-
-  .btn-ghost{
-    background:#f3e8dc; color:#5b3d26; border:1px solid #e6d5c2;
-  }
-
-  .btn-wire{
-    background:transparent; color:var(--brand); border:1px dashed #d9c3ad;
-  }
-
-  .kvs{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  @media (max-width:560px){ .kvs{grid-template-columns:1fr} }
-  .kv{
-    background:#fbf3e8; border:1px solid #efdfcc; border-radius:12px; padding:12px 14px;
-  }
-  .kv label{display:block; font-size:.8rem; color:var(--muted)}
-  .kv div{font-weight:800; margin-top:4px; word-break:break-all}
-
-  .copy{
-    padding:8px 12px; border-radius:10px; border:1px dashed #d9c3ad; background:#f7eee4;
-    font-size:.9rem; cursor:pointer; margin-left:auto; color:#5b3d26; font-weight:700;
-  }
-
-  .hint{font-size:.92rem; color:var(--muted)}
-  #map{height:360px; border-top:1px solid #eadfce}
-
-  footer{max-width:980px; margin:26px auto 40px; padding:0 20px; color:var(--muted); text-align:center}
-
-  .toast{
-    position:fixed; inset:auto 20px 20px auto; background:#2f241f; color:#fff; padding:12px 14px;
-    border-radius:12px; box-shadow:var(--ring); opacity:0; transform:translateY(6px);
-    transition:all .22s ease; pointer-events:none;
-  }
-  .toast.show{opacity:1; transform:translateY(0)}
-
-  /* Settings drawer */
-  .settings{
-    position:fixed; right:20px; top:20px; z-index:9999;
-    display:flex; gap:8px; align-items:center;
-  }
-  .drawer{
-    position:fixed; right:20px; top:64px; width:320px; max-width:92vw;
-    background:var(--card); border:1px solid #eadfce; border-radius:14px; box-shadow:var(--ring);
-    padding:14px; display:none;
-  }
-  .drawer.show{display:block}
-  .field{display:grid; gap:6px; margin:8px 0 10px}
-  .field label{font-size:.82rem; color:var(--muted)}
-  .field input, .field select{
-    padding:10px 12px; border-radius:10px; border:1px solid #e6d8c7; background:#fffaf5; outline:none;
-  }
-
-  /* Small map in the right card */
-.map-embed{
-  height: 280px;                 /* adjust to taste */
-  border-radius: 12px;
-  border: 1px solid #eadfce;
-  background: #fdf7ef;           /* matches your brown aesthetic */
-  box-shadow: var(--ring);
-  margin-top: 6px;
-  overflow: hidden;
+:root {
+  --bg:#f7f2ea;
+  --ink:#3b2f2f;
+  --muted:#7a5e57;
+  --brand:#8b5e34;
+  --brand-2:#a47148;
+  --ok:#3e7b52;
+  --card:#fffaf3;
+  --ring: 0 1px 0 rgba(20,12,8,.04), 0 12px 36px rgba(35,20,10,.10);
+  --radius:16px;
 }
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:
+    radial-gradient(900px 500px at 10% -10%, #f1e6d7 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, #efe5d8 0%, transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Inter, Roboto, Arial;
+}
+header{text-align:center; margin:42px 0 18px;}
+h1{margin:0 0 6px;}
+.wrap{max-width:960px;margin:auto;padding:20px;}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--ring);
+  border:1px solid #eadfce;
+  padding:20px;
+  margin:16px 0;
+}
+.row{display:flex;gap:10px;align-items:center;margin:14px 0;}
+.ip-input{
+  flex:1; padding:12px; border-radius:12px; border:1px solid #e6d8c7;
+  background:#fdf7ef; font-size:1rem;
+}
+.btn{
+  border:none; padding:12px 16px; border-radius:12px; cursor:pointer;
+  font-weight:700; color:white;
+  background:linear-gradient(160deg, var(--brand), var(--brand-2));
+}
+.btn:hover{filter:brightness(1.1);}
+.btn-ghost{
+  background:#f3e8dc; color:#5b3d26; border:1px solid #e6d5c2;
+}
+.kvs{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.kv{background:#fbf3e8;border:1px solid #efdfcc;border-radius:12px;padding:10px;}
+.kv label{font-size:.8rem;color:var(--muted);}
+.kv div{font-weight:700;margin-top:4px;}
+pre{background:#f7eee4;padding:12px;border-radius:10px;white-space:pre-wrap;}
+.badge{
+  background:#efe7de; color:#5c3f29; border:1px solid #e2d3bf; font-size:.8rem;
+  padding:6px 10px; border-radius:999px; font-weight:700;
+}
+footer{text-align:center;color:var(--muted);margin:24px 0;}
+#miniMap{height:280px;border-radius:12px;border:1px solid #eadfce;margin-top:10px;}
+
