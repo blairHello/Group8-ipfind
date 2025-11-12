@@ -1,103 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Just Type(IP)</title>
-    <meta name="description" content="Look up an IP address, subnet, and run diagnostics." />
-    <link rel="icon" href="data:," />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Just Type (IP)</title>
 
-    <link rel="stylesheet" href="proj6.css" />
+  <link rel="stylesheet" href="proj6.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
 
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  </head>
+<body>
+  <header>
+    <h1>Just Type (IP)</h1>
+    <p>Enter any IP or leave blank to detect your own. Includes subnet calculator and network diagnostics.</p>
+  </header>
 
-  <body>
-    <header>
-      <h1>Just Type (IP)</h1>
-      <div class="sub">Enter any IP (leave blank to use your own). We’ll show its type, subnet, and diagnostic info.</div>
-    </header>
-
-    <!-- Settings Drawer -->
-    <div class="settings">
-      <button class="btn btn-wire" id="openSettings" title="Map settings">Map Settings</button>
-    </div>
-    <div class="drawer" id="drawer">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <strong style="font-size: 0.95rem">Map Provider</strong>
-        <button class="btn btn-ghost" id="closeSettings">Close</button>
+  <main class="wrap">
+    <!-- Dito IP Lookup -->
+    <section class="card">
+      <div class="badge">IP Lookup</div>
+      <div class="row">
+        <input id="ipInput" class="ip-input" placeholder="e.g. 8.8.8.8" />
+        <button class="btn" id="lookupBtn">Lookup</button>
+        <button class="btn-ghost" id="myIpBtn">My IP</button>
       </div>
-      <p class="hint" style="margin: 4px 0 10px">Optional: Paste a Map Tiles API key (e.g., <em>MapTiler</em>). If empty, we’ll use OpenStreetMap.</p>
-      <div class="field">
-        <label for="provider">Tiles Provider</label>
-        <select id="provider">
-          <option value="osm">OpenStreetMap (default)</option>
-          <option value="maptiler">MapTiler (needs API key)</option>
-        </select>
+
+      <div class="kvs">
+        <div class="kv"><label>IP Address</label><div id="ipOut">—</div></div>
+        <div class="kv"><label>Type</label><div id="typeOut">—</div></div>
+        <div class="kv"><label>City</label><div id="cityOut">—</div></div>
+        <div class="kv"><label>Region</label><div id="regionOut">—</div></div>
+        <div class="kv"><label>Country</label><div id="countryOut">—</div></div>
+        <div class="kv"><label>ISP</label><div id="ispOut">—</div></div>
       </div>
-      <div class="field">
-        <label for="apiKey">API Key (kept in your browser only)</label>
-        <input id="apiKey" placeholder="e.g. MT_your_maptiler_key_here" />
-      </div>
-      <div style="display: flex; gap: 8px; justify-content: flex-end">
-        <button class="btn btn-ghost" id="resetKey">Reset</button>
-        <button class="btn" id="saveKey">Save</button>
-      </div>
-    </div>
+      <div id="miniMap"></div>
+    </section>
 
-    <main class="wrap grid" aria-live="polite">
-      <!-- Left card: IP lookup -->
-      <section class="card">
-        <div class="pad">
-          <div class="title">
-            <div>
-              <div class="badge">Instant lookup</div>
-              <h2 style="margin: 0.4rem 0 0; font-size: 1.05rem">Enter IP Address</h2>
-              <div class="hint">Supports IPv4 & IPv6</div>
-
-              <div class="row">
-                <input id="ip" class="ip-input" placeholder="e.g. 8.8.8.8 or 2001:4860:4860::8888" />
-                <button class="btn" id="lookup">Lookup</button>
-                <button class="btn btn-ghost" id="mine" title="Use my IP">My IP</button>
-              </div>
-
-              <div class="kvs">
-                <div class="kv"><label>IPv4 Address</label><div id="ipOut">{{ ipv4 if ipv4 else "—" }}</div></div>
-                <div class="kv"><label>IPv6 Address</label><div id="typeOut">{{ ipv6 if ipv6 else "—" }}</div></div>
-                <div class="kv"><label>City</label><div id="cityOut">{{ city if city else "—" }}</div></div>
-                <div class="kv"><label>Region</label><div id="regionOut">{{ region if region else "—" }}</div></div>
-                <div class="kv"><label>Country</label><div id="countryOut">{{ country if country else "—" }}</div></div>
-                <div class="kv"><label>ISP</label><div id="ispOut">{{ isp if isp else "—" }}</div></div>
-                <div class="kv"><label>Country Code</label><div id="ccodeOut">{{ ccode if ccode else "—" }}</div></div>
-                <div class="kv"><label>ASN</label><div id="asnOut">{{ asn if asn else "—" }}</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right card: map -->
-      <aside class="card pad">
-        <h3 style="margin: 0.2rem 0 8px">What’s an IP “type”?</h3>
-        <p class="hint" style="line-height: 1.6">
-          We classify by format & routability (IPv4 vs IPv6; public vs private/reserved). Geolocation is approximate — usually the ISP gateway city.
-        </p>
-        <hr style="border: none; border-top: 1px solid #eadfce; margin: 16px 0" />
-        <h4 class="hint" style="margin:14px 0 6px">Map (approximate)</h4>
-        <div id="miniMap" class="map-embed" aria-label="Approximate IP geolocation map"></div>
-      </aside>
-    </main>
-
-    <!-- Subnet Calculator -->
-    <section class="card pad" style="margin: 30px auto; max-width: 940px;">
-      <div class="title"><div class="badge">Subnet Calculator</div></div>
+    <!-- Dito Subnet Calculator -->
+    <section class="card">
+      <div class="badge">Subnet Calculator</div>
       <div class="row">
         <input id="subnetInput" class="ip-input" placeholder="e.g. 192.168.1.0/24" />
         <button class="btn" id="calcSubnet">Calculate</button>
       </div>
-      <div id="subnetResult" class="kvs">
+      <div class="kvs">
         <div class="kv"><label>Network Address</label><div id="netAddr">—</div></div>
         <div class="kv"><label>Broadcast Address</label><div id="bcastAddr">—</div></div>
         <div class="kv"><label>Subnet Mask</label><div id="maskAddr">—</div></div>
@@ -106,20 +53,20 @@
       </div>
     </section>
 
-    <!-- Network Diagnostic -->
-    <section class="card pad" style="margin: 30px auto; max-width: 940px;">
-      <div class="title"><div class="badge">Network Diagnostic</div></div>
+    <!-- Dito Network Diagnostic -->
+    <section class="card">
+      <div class="badge">Network Diagnostic</div>
       <div class="row">
         <input id="diagInput" class="ip-input" placeholder="Enter domain or IP (e.g. google.com)" />
         <button class="btn" id="pingBtn">Ping</button>
-        <button class="btn btn-ghost" id="dnsBtn">DNS Lookup</button>
+        <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
       </div>
-      <pre id="diagOutput" style="background:#f7eee4; padding:12px; border-radius:10px; min-height:120px; white-space:pre-wrap; font-size:0.9rem;">Waiting for input…</pre>
+      <pre id="diagOutput">Waiting for input…</pre>
     </section>
+  </main>
 
-    <div class="toast" id="toast">Copied!</div>
-    <footer>© <span id="yr"></span> Just Type (IP)</footer>
+  <footer>© <span id="yr"></span> Just Type (IP)</footer>
 
-    <script src="{{ url_for('static', filename='proj6.js') }}"></script>
-  </body>
+  <script src="proj6.js"></script>
+</body>
 </html>
