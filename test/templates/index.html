@@ -17,6 +17,18 @@
   </header>
 
   <main class="wrap">
+
+    <!-- dito network diagnostic -->
+    <section class="card">
+      <div class="badge">Network Diagnostic</div>
+      <div class="row">
+        <input id="diagInput" class="ip-input" placeholder="Enter domain or IP (e.g. google.com)" />
+        <button class="btn" id="pingBtn">Ping</button>
+        <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
+      </div>
+      <pre id="diagOutput">Waiting for input…</pre>
+    </section>
+
     <!-- dito IP lsookup -->
     <section class="card">
       <div class="badge">IP Lookup</div>
@@ -53,16 +65,6 @@
       </div>
     </section>
 
-    <!-- dito network diagnostic -->
-    <section class="card">
-      <div class="badge">Network Diagnostic</div>
-      <div class="row">
-        <input id="diagInput" class="ip-input" placeholder="Enter domain or IP (e.g. google.com)" />
-        <button class="btn" id="pingBtn">Ping</button>
-        <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
-      </div>
-      <pre id="diagOutput">Waiting for input…</pre>
-    </section>
   </main>
 
   <footer>© <span id="yr"></span> Just Type (IP)</footer>
