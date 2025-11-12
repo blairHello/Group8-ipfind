@@ -196,3 +196,61 @@ ISP: ${fields.isp?.textContent || "—"}`;
 
 // initial load: try user's public IP, keep OSM home as default view/pin
 lookup("").catch(() => {/* ignore */});
+
+
+
+// === SUBNET CALCULATOR ===
+function calculateSubnet(cidr) {
+  try {
+    if (!cidr.includes('/')) {
+      document.getElementById("subnetResult").textContent = "Invalid CIDR (use format 192.168.1.0/24)";
+      return;
+    }
+
+    const [ip, prefix] = cidr.split('/');
+    const bits = parseInt(prefix);
+    if (bits < 0 || bits > 32) throw new Error("Invalid prefix");
+
+    const ipParts = ip.split('.').map(Number);
+    const ipNum = (ipParts[0] << 24) | (ipParts[1] << 16) | (ipParts[2] << 8) | ipParts[3];
+    const mask = (0xFFFFFFFF << (32 - bits)) >>> 0;
+    const netAddr = ipNum & mask;
+    const bcastAddr = netAddr | (~mask >>> 0);
+    const totalHosts = bits === 32 ? 1 : Math.pow(2, 32 - bits) - 2;
+    const toIP = n => [(n>>>24)&255, (n>>>16)&255, (n>>>8)&255, n&255].join('.');
+
+    document.getElementById("netAddr").textContent = toIP(netAddr);
+    document.getElementById("bcastAddr").textContent = toIP(bcastAddr);
+    document.getElementById("maskAddr").textContent = toIP(mask);
+    document.getElementById("hostRange").textContent = bits === 32 ? "Single Host" : `${toIP(netAddr + 1)} – ${toIP(bcastAddr - 1)}`;
+    document.getElementById("totalHosts").textContent = totalHosts;
+  } catch (err) {
+    document.getElementById("subnetResult").textContent = "Error: " + err.message;
+  }
+}
+document.getElementById("calcSubnet")?.addEventListener("click", () => calculateSubnet(document.getElementById("subnetInput").value));
+
+// === NETWORK DIAGNOSTIC ===
+async function runDiagnostic(target, type) {
+  const output = document.getElementById("diagOutput");
+  output.textContent = "Running " + type + "…";
+  try {
+    const res = await fetch(`/diagnose?target=${encodeURIComponent(target)}&type=${type}`);
+    const text = await res.text();
+    output.textContent = text;
+  } catch (err) {
+    output.textContent = "Error: " + err.message;
+  }
+}
+
+document.getElementById("pingBtn")?.addEventListener("click", () => {
+  const target = document.getElementById("diagInput").value.trim();
+  if (!target) return alert("Enter a valid domain or IP");
+  runDiagnostic(target, "ping");
+});
+
+document.getElementById("dnsBtn")?.addEventListener("click", () => {
+  const target = document.getElementById("diagInput").value.trim();
+  if (!target) return alert("Enter a valid domain or IP");
+  runDiagnostic(target, "dns");
+});

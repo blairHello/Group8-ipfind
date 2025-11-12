@@ -1,113 +1,65 @@
+from flask import Flask, jsonify, render_template, send_from_directory, request
+import socket
 import requests
-from flask import Flask, render_template, request
+import subprocess
+import platform
+import dns.resolver
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=".", template_folder=".")
 
-
-@app.route("/", methods=["GET", "POST"])
+# ---------- FRONTEND ROUTES ----------
+@app.route('/')
 def home():
-    # Private IP (LAN)
-    client_ip = request.remote_addr
+    return send_from_directory('.', 'index.html')
 
-    # Initialize with default values
-    ipv4 = "—"
-    ipv6 = "—"
-    details = {}
+@app.route('/proj6.css')
+def serve_css():
+    return send_from_directory('.', 'proj6.css')
 
+@app.route('/proj6.js')
+def serve_js():
+    return send_from_directory('.', 'proj6.js')
+
+# ---------- API ROUTES ----------
+@app.route('/myip')
+def my_ip():
+    """Return the client’s public IP."""
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    return jsonify({"ip": ip})
+
+@app.route('/lookup/<ip>')
+def lookup_ip(ip):
+    """Get geolocation info for an IP using ipapi.co"""
     try:
-        # Public IPs with timeout and error handling
-        ipv4 = requests.get("https://api.ipify.org", timeout=5).text
-        ipv6 = requests.get("https://api64.ipify.org", timeout=5).text
-
-        # Get details with proper error checking
-        details_response = requests.get(
-            f"https://ipapi.co/{ipv4}/json/", timeout=5)
-
-        # Check if response is valid JSON before parsing
-        if details_response.status_code == 200 and details_response.text.strip():
-            details = details_response.json()
-        else:
-            print(
-                f"ipapi.co returned status {details_response.status_code} or empty response")
-            details = {}
-
-    except requests.exceptions.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
-        # Debug first 200 chars
-        print(f"Response content: {details_response.text[:200]}")
-        details = {}
-    except requests.exceptions.RequestException as e:
-        print(f"Request error: {e}")
-        details = {}
+        response = requests.get(f"https://ipapi.co/{ip}/json/")
+        return jsonify(response.json())
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        details = {}
+        return jsonify({"error": str(e)}), 500
 
-    user_ip = None
-    user_details = {}
-
-    if request.method == "POST":
-        user_ip = request.form.get("ip_input")
-        if user_ip:
-            try:
-                user_response = requests.get(
-                    f"https://ipapi.co/{user_ip}/json/", timeout=5)
-                if user_response.status_code == 200 and user_response.text.strip():
-                    user_details = user_response.json()
-                else:
-                    print(
-                        f"User IP API returned status {user_response.status_code}")
-                    user_details = {}
-            except requests.exceptions.JSONDecodeError as e:
-                print(f"User IP JSON decode error: {e}")
-                user_details = {}
-            except Exception as e:
-                print(f"User IP error: {e}")
-                user_details = {}
-
-    # Use user_details if available and valid, otherwise use default details
-    display_details = user_details if user_details and isinstance(
-        user_details, dict) else details
-
-    print("Final display_details:", display_details)  # Debug
-
-    return render_template(
-        "index.html",
-        ipv4=ipv4,
-        ipv6=ipv6,
-        city=details.get("city", "Rate Limited"),
-        region=details.get("region", "Rate Limited"),
-        country=details.get("country_name", "Rate Limited"),
-        isp=details.get("org", "Rate Limited"),
-        asn=details.get("asn", "Rate Limited"),
-        ccode=details.get("country_code", "Rate Limited"),
-        user_ip=user_ip,
-        user_details=user_details,
-        details=details
-    )
-
-
-def get_ip_details_fallback(ip_address):
+@app.route('/ping/<target>')
+def ping_host(target):
+    """Ping a target safely and return the output."""
     try:
-        response = requests.get(
-            f"http://ip-api.com/json/{ip_address}", timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return {
-                "city": data.get("city", "—"),
-                "region": data.get("regionName", "—"),
-                "country_name": data.get("country", "—"),
-                "org": data.get("isp", "—"),
-                "asn": data.get("as", "—").split()[0] if data.get("as") else "—",
-                "country_code": data.get("countryCode", "—")
-            }
-        return {}
-    except:
-        return {}
-    
+        param = "-n" if platform.system().lower() == "windows" else "-c"
+        cmd = ["ping", param, "1", target]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3)
+        output = result.stdout or result.stderr
+        return jsonify({"result": output})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-  
+@app.route('/dns/<domain>')
+def dns_lookup(domain):
+    """Perform DNS lookup using dnspython."""
+    try:
+        resolver = dns.resolver.Resolver()
+        answers = resolver.resolve(domain, "A")
+        records = [r.to_text() for r in answers]
+        return jsonify({"domain": domain, "records": records})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
+# ---------- MAIN ----------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
