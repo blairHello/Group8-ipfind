@@ -3,258 +3,117 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Just My Type(IP)</title>
-    <meta
-      name="description"
-      content="Look up an IP address (or your own). See type, city, region, country, ISP and map."
-    />
-    <link rel="icon" href="data:," />
-
+    <title>Just Type (IP)</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='proj6.css') }}"
     />
-
-    <!-- Leaflet -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
-    <script
-      defer
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    ></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   </head>
+  
   <body>
     <header>
-      <h1>Just My Type (IP)</h1>
-      <div class="sub">
-        Enter any IP (leave blank to use your own). We’ll show its type and
-        where it likely geolocates.
-      </div>
+      <h1>Just Type (IP)</h1>
+      <p>
+        Network tools made simple — diagnostics, lookup, and subnet insights.
+      </p>
     </header>
 
-    <!-- Tiny settings: place to put your Map Tiles API key -->
-    <div class="settings">
-      <button class="btn btn-wire" id="openSettings" title="Map settings">
-        Map Settings
-      </button>
-    </div>
-    <div class="drawer" id="drawer">
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 6px;
-        "
-      >
-        <strong style="font-size: 0.95rem">Map Provider</strong>
-        <button class="btn btn-ghost" id="closeSettings">Close</button>
-      </div>
-      <p class="hint" style="margin: 4px 0 10px">
-        Optional: Paste a Map Tiles API key (e.g., <em>MapTiler</em>). If empty,
-        we’ll use OpenStreetMap.
-      </p>
-      <div class="field">
-        <label for="provider">Tiles Provider</label>
-        <select id="provider">
-          <option value="osm">OpenStreetMap (default)</option>
-          <option value="maptiler">MapTiler (needs API key)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="apiKey">API Key (kept in your browser only)</label>
-        <input id="apiKey" placeholder="e.g. MT_your_maptiler_key_here" />
-      </div>
-      <div style="display: flex; gap: 8px; justify-content: flex-end">
-        <button class="btn btn-ghost" id="resetKey">Reset</button>
-        <button class="btn" id="saveKey">Save</button>
-      </div>
-    </div>
+    <main class="wrap">
+      <!-- Network Diagnostic FIRST -->
+      <section class="card" style="flex: 1 1 100%">
+        <div class="badge">Network Diagnostic</div>
+        <div class="row">
+          <input
+            id="diagInput"
+            class="ip-input"
+            placeholder="Enter domain or IP (e.g. google.com)"
+          />
+          <button class="btn" id="pingBtn">Ping</button>
+          <button class="btn-ghost" id="dnsBtn">DNS Lookup</button>
+        </div>
+        <pre id="diagOutput">Waiting for input…</pre>
+      </section>
 
-    <main class="wrap grid" aria-live="polite">
+      <!-- IP Lookup -->
       <section class="card">
-        <div class="pad">
-          <div class="title">
-            <div>
-              <div class="badge">Instant lookup</div>
-              <h2 style="margin: 0.4rem 0 0; font-size: 1.05rem">
-                Enter IP Address
-              </h2>
-              <div class="hint">Supports IPv4 &amp; IPv6</div>
+        <div class="badge">IP Lookup</div>
+        <div class="row">
+          <input id="ipInput" class="ip-input" placeholder="e.g. 8.8.8.8" />
+          <button class="btn" id="lookupBtn">Lookup</button>
+          <button class="btn-ghost" id="myIpBtn">My IP</button>
+        </div>
 
-              <div class="row">
-                <form method="POST" action="/">
-                  <input
-                    id="ipIn"
-                    class="ip-input"
-                    name="IpIn"
-                    placeholder="e.g. 8.8.8.8 or 2001:4860:4860::8888"
-                  />
-                  <button type="submit" class="btn" id="lookup">Lookup</button>
-                  <button class="btn btn-ghost" id="mine" title="Use my IP">
-                    My IP
-                  </button>
-                </form>
-              </div>
+        <div class="kvs">
+          <div class="kv">
+            <label>IP Address</label>
+            <div id="ipOut">—</div>
+          </div>
+          <div class="kv">
+            <label>Type</label>
+            <div id="typeOut">—</div>
+          </div>
+          <div class="kv">
+            <label>City</label>
+            <div id="cityOut">—</div>
+          </div>
+          <div class="kv">
+            <label>Region</label>
+            <div id="regionOut">—</div>
+          </div>
+          <div class="kv">
+            <label>Country</label>
+            <div id="countryOut">—</div>
+          </div>
+          <div class="kv">
+            <label>ISP</label>
+            <div id="ispOut">—</div>
+          </div>
+        </div>
+        <div id="miniMap"></div>
+      </section>
 
-              <div class="kvs">
-                {% if user_ip %}
-                <div class="kv">
-                  <label>IPv4 Address</label>
-                  <div id="ipOut">{{ ipv4 }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>IPv6 Address</label>
-                  <div id="typeOut">{{ ipv6 }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>City</label>
-                  <div id="cityOut">{{ city }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Region</label>
-                  <div id="regionOut">{{ region }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country</label>
-                  <div id="countryOut">{{ country }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ISP</label>
-                  <div id="ispOut">{{ isp }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country Code</label>
-                  <div id="ispOut">{{ ccode }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ASN</label>
-                  <div id="ispOut">{{ asn }}</div>
-                </div>
-
-                {% else %} {% endif %} {% if ipv4 %}
-
-                <div class="kv">
-                  <label>IPv4 Address</label>
-                  <div id="ipOut">{{ ipv4 }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>IPv6 Address</label>
-                  <div id="typeOut">{{ ipv6 }}</div>
-                </div>
-
-                {% else %}
-                <div class="kv">
-                  <label>IPv4 Address</label>
-                  <div id="ipOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>IPv6 Address</label>
-                  <div id="typeOut">—</div>
-                </div>
-                {% endif %} {% if details %}
-                <div class="kv">
-                  <label>City</label>
-                  <div id="cityOut">{{ city }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Region</label>
-                  <div id="regionOut">{{ region }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country</label>
-                  <div id="countryOut">{{ country }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ISP</label>
-                  <div id="ispOut">{{ isp }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country Code</label>
-                  <div id="ispOut">{{ ccode }}</div>
-                </div>
-
-                <div class="kv">
-                  <label>ASN</label>
-                  <div id="ispOut">{{ asn }}</div>
-                </div>
-                {% else %}
-                <div class="kv">
-                  <label>City</label>
-                  <div id="cityOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>Region</label>
-                  <div id="regionOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country</label>
-                  <div id="countryOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>ISP</label>
-                  <div id="ispOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>Country Code</label>
-                  <div id="ispOut">—</div>
-                </div>
-
-                <div class="kv">
-                  <label>ASN</label>
-                  <div id="ispOut">—</div>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-            <div id="map"></div>
+      <!-- Subnet Calculator -->
+      <section class="card">
+        <div class="badge">Subnet Calculator</div>
+        <div class="row">
+          <input
+            id="subnetInput"
+            class="ip-input"
+            placeholder="e.g. 192.168.1.0/24"
+          />
+          <button class="btn" id="calcSubnet">Calculate</button>
+        </div>
+        <div class="subnet-output">
+          <div class="subnet-box">
+            <label>Network Address</label>
+            <div id="netAddr">—</div>
+          </div>
+          <div class="subnet-box">
+            <label>Broadcast Address</label>
+            <div id="bcastAddr">—</div>
+          </div>
+          <div class="subnet-box">
+            <label>Subnet Mask</label>
+            <div id="maskAddr">—</div>
+          </div>
+          <div class="subnet-box">
+            <label>Host Range</label>
+            <div id="hostRange">—</div>
+          </div>
+          <div class="subnet-box">
+            <label>Total Hosts</label>
+            <div id="totalHosts">—</div>
           </div>
         </div>
       </section>
-
-      <!-- Right card: mini explainer -->
-      <aside class="card pad">
-        <h3 style="margin: 0.2rem 0 8px">What’s an IP “type”?</h3>
-        <p class="hint" style="line-height: 1.6">
-          We classify by format &amp; routability (IPv4 vs IPv6; public vs
-          private/reserved). Geolocation is approximate — usually the ISP
-          gateway city, not your street.
-        </p>
-        <hr
-          style="border: none; border-top: 1px solid #eadfce; margin: 16px 0"
-        />
-        <ul class="hint" style="padding-left: 18px; line-height: 1.8">
-          <li>
-            Leave the box empty and press <em>My IP</em> to detect your address.
-          </li>
-          <li>Click <em>Copy results</em> to share a snapshot.</li>
-          <li>No cookies, no tracking pixels.</li>
-        </ul>
-      </aside>
     </main>
 
-    <div class="toast" id="toast">Copied!</div>
-    <footer>© <span id="yr"></span> Just My Type (IP)</footer>
+    <footer>© <span id="yr"></span> Just Type (IP)</footer>
+    <script src="{{ url_for('static', filename='proj6.js') }}"></script>
   </body>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="{{ url_for('static', filename='proj6.js') }}"></script>
 </html>
