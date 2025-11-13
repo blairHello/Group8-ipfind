@@ -40,8 +40,7 @@ async function lookupIP(ip) {
 document.getElementById("lookupBtn").addEventListener("click", () => lookupIP(document.getElementById("ipInput").value));
 document.getElementById("myIpBtn").addEventListener("click", () => lookupIP(""));
 
-// --- Subnet Calculator ---
-// --- dito yung subnet calculator ---
+
 document.getElementById("calcSubnet").addEventListener("click", () => {
   const cidr = document.getElementById("subnetInput").value.trim();
   try {
@@ -66,7 +65,7 @@ document.getElementById("calcSubnet").addEventListener("click", () => {
 });
 
 // --- Network Diagnostic (client-side simulation) ---
-// --- dito yung network diagnostic ---
+
 document.getElementById("pingBtn").addEventListener("click", async () => {
   const target = document.getElementById("diagInput").value.trim();
   if (!target) return alert("Enter a valid domain or IP");

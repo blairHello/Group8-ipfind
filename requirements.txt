@@ -3,4 +3,7 @@ pytest-cov>=4.0.0
 requests>=2.25.0
 coverage>=6.0
 flake8>=5.0.0
+Flask==2.3.3
+requests==2.32.0
+flask-cors==4.0.0
 flask-testing>=0.8.0
