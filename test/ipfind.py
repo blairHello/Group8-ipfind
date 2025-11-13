@@ -63,10 +63,10 @@ def home():
 
     if request.method == "POST":
         user_ip = request.form.get("IpIn")
-        print(f"📨 Received POST request with IP: {user_ip}")
+        print(f" Received POST request with IP: {user_ip}")
 
         if user_ip:
-            print("🔄 Fetching details from IP API...")
+            print(" Fetching details from IP API...")
             try:
                 resp = requests.get(f"https://ipapi.co/{user_ip}/json/")
                 if resp.headers.get("Content-Type", "").startswith("application/json"):
@@ -78,7 +78,7 @@ def home():
             except requests.exceptions.RequestException as e:
                 user_details = {"error": str(e)}
 
-            print(f"📋 API Response: {user_details}")
+            print(f" API Response: {user_details}")
             details = user_details
 
             try:
