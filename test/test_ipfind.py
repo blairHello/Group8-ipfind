@@ -2,15 +2,15 @@ import unittest
 from unittest.mock import patch, MagicMock
 import sys
 import os
+import ipfind
 
-# Add the parent directory to the path to import your actual app
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Import your actual Flask app - adjust based on your file structure
+
 try:
     from ipfind import app, is_valid_public_ip
 except ImportError:
-    # If your main file has a different name or structure
     try:
         import importlib.util
         spec = importlib.util.spec_from_file_location("ipfind", "../app.py")

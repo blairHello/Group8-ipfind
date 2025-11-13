@@ -5,7 +5,6 @@ import importlib.util
 import sys
 
 def find_and_import_app():
-    """Find and import the Flask app dynamically"""
     possible_files = ['test/app.py', 'test/ipfind.py', 'test/main.py', 'test/server.py']
     app_instance = None
     validation_function = None

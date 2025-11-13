@@ -2,11 +2,13 @@ import requests
 import re
 import ipaddress
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
 
-def is_valid_public_ip(ip):
-    """Validate IP address and ensure it's public"""
+
+def is_valid_public_ip(ip):                         
     re_v4 = re.compile(
         r'^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
     re_v6 = re.compile(r'^[0-9a-fA-F:]+$')
@@ -20,28 +22,39 @@ def is_valid_public_ip(ip):
     if not is_ipv4 and not is_ipv6:
         return False, "Invalid IP address format"
 
-    # Check for private/reserved ranges
     if is_ipv4:
         octets = [int(x) for x in ip.split('.')]
-        # Private ranges
         if (octets[0] == 10 or
             (octets[0] == 172 and 16 <= octets[1] <= 31) or
             (octets[0] == 192 and octets[1] == 168) or
-            (octets[0] == 169 and octets[1] == 254) or  # Link-local
-            (octets[0] == 127) or  # Loopback
-            (octets[0] == 0) or  # Current network
-            (224 <= octets[0] <= 239) or  # Multicast
-                (240 <= octets[0] <= 255)):  # Reserved
+            (octets[0] == 169 and octets[1] == 254) or
+            (octets[0] == 127) or
+            (octets[0] == 0) or
+            (224 <= octets[0] <= 239) or
+                (240 <= octets[0] <= 255)):
             return False, "Private, reserved, or special-use IP addresses are not allowed"
 
     return True, "Valid public IP"
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     # Public IPs
     ipv4 = requests.get("https://api.ipify.org").text
     ipv6 = requests.get("https://api64.ipify.org").text
-    details = requests.get(f"https://ipapi.co/{ipv4}/json/").json()
+
+    # --- Safely handle initial IPAPI request ---
+    try:
+        r = requests.get(f"https://ipapi.co/{ipv4}/json/")
+        if r.headers.get("Content-Type", "").startswith("application/json"):
+            details = r.json()
+        else:
+            details = {}
+    except requests.exceptions.JSONDecodeError:
+        details = {}
+    except requests.exceptions.RequestException as e:
+        print("⚠️ Network error while fetching IP details:", e)
+        details = {}
 
     client_ip = request.remote_addr
     user_ip = None
@@ -54,8 +67,17 @@ def home():
 
         if user_ip:
             print("🔄 Fetching details from IP API...")
-            user_details = requests.get(f"https://ipapi.co/{user_ip}/json/").json()
-            print("Inputted IP:", user_ip)
+            try:
+                resp = requests.get(f"https://ipapi.co/{user_ip}/json/")
+                if resp.headers.get("Content-Type", "").startswith("application/json"):
+                    user_details = resp.json()
+                else:
+                    user_details = {"error": "Non-JSON response from API"}
+            except requests.exceptions.JSONDecodeError:
+                user_details = {"error": "Failed to parse JSON from API"}
+            except requests.exceptions.RequestException as e:
+                user_details = {"error": str(e)}
+
             print(f"📋 API Response: {user_details}")
             details = user_details
 
@@ -93,6 +115,22 @@ def home():
         details=details,
         ip_version=ip_version
     )
+
+
+# 🧩 New Route: CORS-safe proxy for frontend requests
+@app.route("/get_ipinfo/<ip>")
+def get_ipinfo(ip):
+    """Proxy request to ipapi.co to bypass CORS restrictions"""
+    try:
+        resp = requests.get(f"https://ipapi.co/{ip}/json/")
+        if resp.headers.get("Content-Type", "").startswith("application/json"):
+            data = resp.json()
+            return jsonify(data)
+        else:
+            return jsonify({"error": "Non-JSON response from API"}), 502
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
